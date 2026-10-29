@@ -1,0 +1,14 @@
+{
+  "name": "ai-test-generator-copilot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Copilot agents that turn test cases into Playwright (web-tests/) and Mobilewright (mobile-tests/) tests",
+  "scripts": {
+    "setup:web": "cd web-tests && npm install && npx playwright install chromium",
+    "setup:mobile": "cd mobile-tests && npm install",
+    "test:web": "cd web-tests && npm test",
+    "test:mobile": "cd mobile-tests && npm test",
+    "demo": "python3 -m http.server 4173 --directory demo-app",
+    "build:mobile-app": "demo-mobile-app/build.sh"
+  }
+}

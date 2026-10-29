@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout | Demo Shop</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="checkout">
+  <header class="site-header"></header>
+  <main class="page">
+    <h1>Checkout</h1>
+    <p id="order-total" class="total"></p>
+    <form id="checkout-form" novalidate style="max-width: 480px">
+      <div class="field">
+        <label for="full-name">Full name</label>
+        <input id="full-name" type="text" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="address">Address</label>
+        <input id="address" type="text" autocomplete="street-address">
+      </div>
+      <div class="field">
+        <label for="city">City</label>
+        <input id="city" type="text" autocomplete="address-level2">
+      </div>
+      <div class="field">
+        <label for="pin">PIN code</label>
+        <input id="pin" type="text" inputmode="numeric" autocomplete="postal-code">
+      </div>
+      <fieldset>
+        <legend>Payment method</legend>
+        <label class="option"><input type="radio" name="payment" value="Cash on delivery" checked> Cash on delivery</label>
+        <label class="option"><input type="radio" name="payment" value="Card"> Card</label>
+        <label class="option"><input type="radio" name="payment" value="UPI"> UPI</label>
+      </fieldset>
+      <p id="error" class="error" role="alert"></p>
+      <button type="submit">Place order</button>
+    </form>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

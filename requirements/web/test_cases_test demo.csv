@@ -1,0 +1,26 @@
+Test Case ID,Title,Folder ID,Folder Path,State,Owner,Priority,Type of Test Case,Automation Status,Description,Preconditions,Template,Steps,Steps: Additional Data,Expected Result,Issues,Tags,Attachments,Created At,Created By,Last Updated At,Last Updated By,Project Name,Test Case URL,AI Prompt
+TC-102,TC_LOGIN_001,60510514,Login,Active,Souradeep Ghosh,Medium,Other,Not Automated,"Verify login with valid credentials
+
+","",Steps,"Navigate to the URL-https://freelance-learn-automation.vercel.app/login
+
+","","","","","",10/26/2026 19:19:18,Souradeep Ghosh,10/26/2026 19:19:18,Souradeep Ghosh,test demo,https://test-management.browserstack.com/projects/4273912/folder/60510514/test-cases/147653007,""
+,,,,,,,,,,,,"Enter valid email address-admin@email.com
+
+","","Email should be accepted
+
+",,,,,,,,,,
+,,,,,,,,,,,,"Enter valid password-admin@123
+
+","","Password should be entered and masked
+
+",,,,,,,,,,
+,,,,,,,,,,,,"Click the Sign in button
+
+","","User should be logged in
+
+",,,,,,,,,,
+,,,,,,,,,,,,"Verify the URL
+
+","","URL should not contain login
+
+",,,,,,,,,,

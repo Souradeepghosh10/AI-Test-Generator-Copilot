@@ -1,0 +1,11 @@
+.env
+.venv/
+__pycache__/
+node_modules/
+test-results/
+playwright-report/
+mobilewright-report/
+mobile-tests/locators.log
+.playwright-mcp/
+demo-mobile-app/build/
+.DS_Store

@@ -1,0 +1,27 @@
+### Test Case: Verify login with a wrong password
+
+Feature: (not given) Test Type: Negative Platform: Android App: com.demoshop.mobile
+
+| Field           | Details                                   |
+| --------------- | ----------------------------------------- |
+| Test Case ID    | DEMO-SHOP-TC002 |
+| Jira Reference  | DEMO-SHOP / TC002 |
+| Test Scenario   | Login with a wrong password |
+| Preconditions   | (not given) |
+| Email           | demo@shop.test |
+| Password        | Wrong@123 |
+| Expected Result | Sign in screen is still displayed with the heading "Sign in" |
+
+### Test Steps
+
+| Step | Action | Test Data | Expected Result |
+| ---- | ------ | --------- | --------------- |
+| 1 | Launch the app | com.demoshop.mobile | Sign in screen is displayed with the heading "Sign in" |
+| 2 | Enter the email | demo@shop.test | Email is entered |
+| 3 | Enter the password | Wrong@123 | Password is entered |
+| 4 | Tap the "Sign in" button |  | Error message "Invalid email or password" is shown |
+| 5 | Verify the screen |  | Sign in screen is still displayed with the heading "Sign in" |
+
+Pass Criteria: The test passes if sign in screen is still displayed with the heading "Sign in".
+
+Test Status: Not Run.

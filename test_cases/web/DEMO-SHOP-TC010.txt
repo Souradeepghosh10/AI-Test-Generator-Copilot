@@ -1,0 +1,34 @@
+### Test Case: Verify checkout with an invalid PIN code
+
+Feature: (not given) Test Type: Negative Platform: Web URL: http://localhost:4173/login.html
+
+| Field           | Details                                   |
+| --------------- | ----------------------------------------- |
+| Test Case ID    | DEMO-SHOP-TC010                         |
+| Jira Reference  | DEMO-SHOP / TC010                         |
+| Test Scenario   | Checkout with an invalid PIN code         |
+| Preconditions   | (not given)                              |
+| Email           | demo@shop.test                          |
+| Password        | Demo@123                                 |
+| Expected Result | Error message "PIN code must be 6 digits" is shown and the page stays on checkout |
+
+### Test Steps
+
+| Step | Action                                          | Test Data                 | Expected Result                         |
+| ---- | ----------------------------------------------- | ------------------------- | --------------------------------------  |
+| 1    | Navigate to the login page                      | http://localhost:4173/login.html | Login page is displayed with the heading "Sign in" |
+| 2    | Enter the email                                | demo@shop.test            | Email is entered                       |
+| 3    | Enter the password                             | Demo@123                  | Password is entered                    |
+| 4    | Click the "Sign in" button                    |                           | Products page opens and shows "Welcome, Demo User" |
+| 5    | Click "Add to cart" for "Wall Calendar"         |                           | The cart link shows "Cart (1)"             |
+| 6    | Click the "Cart (1)" link                      |                           | Cart page lists Wall Calendar                  |
+| 7    | Click "Proceed to checkout"                     |                           | Checkout page opens with the heading "Checkout" |
+| 8    | Enter the full name                             | Demo User                 | Full name is entered                   |
+| 9    | Enter the address                               | 12 MG Road                | Address is entered                     |
+| 10   | Enter the city                                  | Bengaluru                 | City is entered                        |
+| 11   | Enter the PIN code                              | 5600                      | PIN code is entered                    |
+| 12   | Click the "Place order" button                  |                           | Error message "PIN code must be 6 digits" is shown and the page stays on checkout |
+
+Pass Criteria: The test passes if error message "PIN code must be 6 digits" is shown and the page stays on checkout.
+
+Test Status: Not Run.

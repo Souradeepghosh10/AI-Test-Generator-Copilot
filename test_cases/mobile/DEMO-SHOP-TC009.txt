@@ -1,0 +1,35 @@
+### Test Case: Verify placing an order
+
+Feature: (not given) Test Type: Positive Platform: Android App: com.demoshop.mobile
+
+| Field           | Details                                   |
+| --------------- | ----------------------------------------- |
+| Test Case ID    | DEMO-SHOP-TC009 |
+| Jira Reference  | DEMO-SHOP / TC009 |
+| Test Scenario   | Place an order |
+| Preconditions   | (not given) |
+| Email           | demo@shop.test |
+| Password        | Demo@123 |
+| Expected Result | Screen shows the heading "Order placed" and "Thank you, Demo User. Your order number is DS-1001." |
+
+### Test Steps
+
+| Step | Action | Test Data | Expected Result |
+| ---- | ------ | --------- | --------------- |
+| 1 | Launch the app | com.demoshop.mobile | Sign in screen is displayed with the heading "Sign in" |
+| 2 | Enter the email | demo@shop.test | Email is entered |
+| 3 | Enter the password | Demo@123 | Password is entered |
+| 4 | Tap the "Sign in" button |  | Products screen opens and shows "Welcome, Demo User" |
+| 5 | Tap "Add to cart" for "Desk Lamp" |  | The cart button shows "Cart (1)" |
+| 6 | Tap the "Cart (1)" button |  | Cart screen shows "Total: ₹1,499" |
+| 7 | Tap "Proceed to checkout" |  | Checkout screen opens and shows "Order total: ₹1,499" |
+| 8 | Enter the full name | Demo User | Full name is entered |
+| 9 | Enter the address | 12 MG Road | Address is entered |
+| 10 | Enter the city | Bengaluru | City is entered |
+| 11 | Enter the PIN code | 560001 | PIN code is entered |
+| 12 | Select the payment method "Cash on delivery" | Cash on delivery | Cash on delivery is selected |
+| 13 | Tap the "Place order" button |  | Screen shows the heading "Order placed" and "Thank you, Demo User. Your order number is DS-1001." |
+
+Pass Criteria: The test passes if screen shows the heading "Order placed" and "Thank you, Demo User. Your order number is DS-1001.".
+
+Test Status: Not Run.

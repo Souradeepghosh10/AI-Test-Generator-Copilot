@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cart | Demo Shop</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="cart">
+  <header class="site-header"></header>
+  <main class="page">
+    <h1>Your cart</h1>
+    <p id="cart-empty" hidden>Your cart is empty. <a href="products.html">Continue shopping</a></p>
+    <div id="cart-content" hidden>
+      <table aria-label="Cart items">
+        <thead>
+          <tr><th>Product</th><th class="num">Price</th><th class="num">Quantity</th><th class="num">Subtotal</th><th><span class="hint">Action</span></th></tr>
+        </thead>
+        <tbody id="cart-body"></tbody>
+      </table>
+      <p id="cart-total" class="total"></p>
+      <div class="actions">
+        <a class="button" href="checkout.html">Proceed to checkout</a>
+        <a href="products.html">Continue shopping</a>
+      </div>
+    </div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

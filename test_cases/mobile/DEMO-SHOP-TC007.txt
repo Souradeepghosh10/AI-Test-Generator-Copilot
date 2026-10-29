@@ -1,0 +1,30 @@
+### Test Case: Verify adding products to the cart
+
+Feature: (not given) Test Type: Positive Platform: Android App: com.demoshop.mobile
+
+| Field           | Details                                   |
+| --------------- | ----------------------------------------- |
+| Test Case ID    | DEMO-SHOP-TC007 |
+| Jira Reference  | DEMO-SHOP / TC007 |
+| Test Scenario   | Add products to the cart |
+| Preconditions   | (not given) |
+| Email           | demo@shop.test |
+| Password        | Demo@123 |
+| Expected Result | Total shows "Total: ₹1,148" |
+
+### Test Steps
+
+| Step | Action | Test Data | Expected Result |
+| ---- | ------ | --------- | --------------- |
+| 1 | Launch the app | com.demoshop.mobile | Sign in screen is displayed with the heading "Sign in" |
+| 2 | Enter the email | demo@shop.test | Email is entered |
+| 3 | Enter the password | Demo@123 | Password is entered |
+| 4 | Tap the "Sign in" button |  | Products screen opens and shows "Welcome, Demo User" |
+| 5 | Tap "Add to cart" for "Notebook A5" |  | Message "Notebook A5 added to cart" is shown and the cart button shows "Cart (1)" |
+| 6 | Tap "Add to cart" for "Fountain Pen" |  | The cart button shows "Cart (2)" |
+| 7 | Tap the "Cart (2)" button |  | Cart screen opens with the heading "Your cart" and lists Notebook A5 and Fountain Pen |
+| 8 | Verify the total |  | Total shows "Total: ₹1,148" |
+
+Pass Criteria: The test passes if total shows "Total: ₹1,148".
+
+Test Status: Not Run.

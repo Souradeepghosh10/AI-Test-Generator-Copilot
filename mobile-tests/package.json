@@ -1,0 +1,20 @@
+{
+  "name": "mobile-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mobilewright tests for the native Demo Shop Android app (../demo-mobile-app)",
+  "scripts": {
+    "build-app": "../demo-mobile-app/build.sh",
+    "test": "mobilewright test",
+    "report": "mobilewright show-report",
+    "inspect": "mobilewright inspect",
+    "codegen": "mobilewright codegen",
+    "locator": "node locator.mjs",
+    "typecheck": "tsc -p ."
+  },
+  "devDependencies": {
+    "@mobilewright/test": "^0.0.67",
+    "mobilewright": "^0.0.67",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  // MCP servers for the GitHub Copilot agents in .github/agents (no API keys needed)
+  "servers": {
+    // Browser tools for the explorer, generator and healer. "--caps=testing" adds browser_generate_locator and
+    // browser_verify_*, which return the real Playwright locator / assertion code for an element on the page.
+    // Uses the version installed in web-tests/ (npm run setup:web)
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["--prefix", "${workspaceFolder}/web-tests", "@playwright/mcp", "--isolated", "--browser", "chromium", "--caps=testing"]
+    },
+    // Lists phones (Android emulators / devices, iOS simulators) and takes screenshots for the agents. Taps, typing
+    // and real Mobilewright locators go through mobile-tests/act.mjs (see .github/platforms.md)
+    "mobile": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@mobilenext/mobile-mcp@1.0.14"]
+    },
+    // Reads Jira stories. VS Code signs you in to Atlassian in the browser (OAuth), no API token
+    "atlassian": {
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/mcp"
+    }
+  }
+}

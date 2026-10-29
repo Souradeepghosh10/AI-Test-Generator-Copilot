@@ -1,0 +1,30 @@
+### Test Case: Verify creating a new account
+
+Feature: (not given) Test Type: Positive Platform: Android App: com.demoshop.mobile
+
+| Field           | Details                                   |
+| --------------- | ----------------------------------------- |
+| Test Case ID    | DEMO-SHOP-TC004 |
+| Jira Reference  | DEMO-SHOP / TC004 |
+| Test Scenario   | Create a new account |
+| Preconditions   | Run on a fresh app launch (the email must not be registered yet) |
+| Email           | test.user@example.com |
+| Password        | Secret@123 |
+| Expected Result | Message "Account created for Test User. You can now sign in." is shown |
+
+### Test Steps
+
+| Step | Action | Test Data | Expected Result |
+| ---- | ------ | --------- | --------------- |
+| 1 | Launch the app | com.demoshop.mobile | Sign in screen is displayed with the heading "Sign in" |
+| 2 | Tap the "New user? Sign up" button |  | Sign up screen opens with the heading "Create account" |
+| 3 | Enter the full name | Test User | Name is entered |
+| 4 | Enter the email | test.user@example.com | Email is entered |
+| 5 | Enter the password | Secret@123 | Password is entered |
+| 6 | Tick the interest "Playwright" | Playwright | Playwright is ticked |
+| 7 | Select the state | Karnataka | Karnataka is selected |
+| 8 | Tap the "Create account" button |  | Message "Account created for Test User. You can now sign in." is shown |
+
+Pass Criteria: The test passes if message "Account created for Test User. You can now sign in." is shown.
+
+Test Status: Not Run.

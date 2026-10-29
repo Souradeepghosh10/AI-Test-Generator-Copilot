@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Resource ids of the app's elements: tests see them as com.demoshop.mobile:id/<name> -->
+<resources>
+    <!-- Shared -->
+    <item name="error" type="id" />
+    <item name="continue_shopping" type="id" />
+
+    <!-- Header -->
+    <item name="brand" type="id" />
+    <item name="cart_button" type="id" />
+    <item name="account_button" type="id" />
+
+    <!-- Sign in -->
+    <item name="flash" type="id" />
+    <item name="email" type="id" />
+    <item name="password" type="id" />
+    <item name="sign_in" type="id" />
+    <item name="signup_link" type="id" />
+
+    <!-- Sign up -->
+    <item name="name" type="id" />
+    <item name="interest_playwright" type="id" />
+    <item name="interest_selenium" type="id" />
+    <item name="interest_cypress" type="id" />
+    <item name="state" type="id" />
+    <item name="create_account" type="id" />
+    <item name="result" type="id" />
+    <item name="go_to_sign_in" type="id" />
+    <item name="sign_in_link" type="id" />
+
+    <!-- Products -->
+    <item name="welcome" type="id" />
+    <item name="search" type="id" />
+    <item name="sort" type="id" />
+    <item name="result_count" type="id" />
+    <item name="product_list" type="id" />
+    <item name="cart_status" type="id" />
+    <item name="add_notebook" type="id" />
+    <item name="add_pen" type="id" />
+    <item name="add_lamp" type="id" />
+    <item name="add_pencils" type="id" />
+    <item name="add_bookmark" type="id" />
+    <item name="add_calendar" type="id" />
+
+    <!-- Cart -->
+    <item name="cart_empty" type="id" />
+    <item name="cart_total" type="id" />
+    <item name="checkout_button" type="id" />
+    <item name="remove_notebook" type="id" />
+    <item name="remove_pen" type="id" />
+    <item name="remove_lamp" type="id" />
+    <item name="remove_pencils" type="id" />
+    <item name="remove_bookmark" type="id" />
+    <item name="remove_calendar" type="id" />
+
+    <!-- Checkout -->
+    <item name="order_total" type="id" />
+    <item name="full_name" type="id" />
+    <item name="address" type="id" />
+    <item name="city" type="id" />
+    <item name="pin" type="id" />
+    <item name="payment" type="id" />
+    <item name="pay_cod" type="id" />
+    <item name="pay_card" type="id" />
+    <item name="pay_upi" type="id" />
+    <item name="place_order" type="id" />
+
+    <!-- Order placed -->
+    <item name="order_message" type="id" />
+    <item name="order_summary" type="id" />
+</resources>

@@ -1,0 +1,24 @@
+### Test Case: Verify login with an empty email
+
+Feature: (not given) Test Type: Negative Platform: Android App: com.demoshop.mobile
+
+| Field           | Details                                   |
+| --------------- | ----------------------------------------- |
+| Test Case ID    | DEMO-SHOP-TC003 |
+| Jira Reference  | DEMO-SHOP / TC003 |
+| Test Scenario   | Login with an empty email |
+| Preconditions   | Leave both fields empty |
+| Email           | (empty) |
+| Password        | (empty) |
+| Expected Result | Error message "Email is required" is shown |
+
+### Test Steps
+
+| Step | Action | Test Data | Expected Result |
+| ---- | ------ | --------- | --------------- |
+| 1 | Launch the app | com.demoshop.mobile | Sign in screen is displayed with the heading "Sign in" |
+| 2 | Tap the "Sign in" button without entering an email or password |  | Error message "Email is required" is shown |
+
+Pass Criteria: The test passes if error message "Email is required" is shown.
+
+Test Status: Not Run.

@@ -1,0 +1,28 @@
+### Test Case: Verify signing out from the account menu
+
+Feature: (not given) Test Type: Positive Platform: Android App: com.demoshop.mobile
+
+| Field           | Details                                   |
+| --------------- | ----------------------------------------- |
+| Test Case ID    | DEMO-SHOP-TC011 |
+| Jira Reference  | DEMO-SHOP / TC011 |
+| Test Scenario   | Sign out from the account menu |
+| Preconditions   | (not given) |
+| Email           | demo@shop.test |
+| Password        | Demo@123 |
+| Expected Result | Sign in screen opens and shows "You have signed out" |
+
+### Test Steps
+
+| Step | Action | Test Data | Expected Result |
+| ---- | ------ | --------- | --------------- |
+| 1 | Launch the app | com.demoshop.mobile | Sign in screen is displayed with the heading "Sign in" |
+| 2 | Enter the email | demo@shop.test | Email is entered |
+| 3 | Enter the password | Demo@123 | Password is entered |
+| 4 | Tap the "Sign in" button |  | Products screen opens and shows "Welcome, Demo User" |
+| 5 | Tap the "Account" button |  | Account menu opens and shows "Sign out" |
+| 6 | Tap "Sign out" |  | Sign in screen opens and shows "You have signed out" |
+
+Pass Criteria: The test passes if sign in screen opens and shows "You have signed out".
+
+Test Status: Not Run.

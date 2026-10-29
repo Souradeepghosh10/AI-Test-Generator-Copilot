@@ -1,0 +1,27 @@
+### Test Case: Verify searching for a product
+
+Feature: (not given) Test Type: Positive Platform: Web URL: http://localhost:4173/login.html
+
+| Field           | Details                                   |
+| --------------- | ----------------------------------------- |
+| Test Case ID    | DEMO-SHOP-TC005                         |
+| Jira Reference  | DEMO-SHOP / TC005                         |
+| Test Scenario   | Search for a product                    |
+| Preconditions   | (not given)                              |
+| Email           | demo@shop.test                          |
+| Password        | Demo@123                                 |
+| Expected Result | Only "Desk Lamp" is listed and "1 product found" is shown |
+
+### Test Steps
+
+| Step | Action                                          | Test Data                 | Expected Result                         |
+| ---- | ----------------------------------------------- | ------------------------- | --------------------------------------  |
+| 1    | Navigate to the login page                      | http://localhost:4173/login.html | Login page is displayed with the heading "Sign in" |
+| 2    | Enter the email                                | demo@shop.test            | Email is entered                       |
+| 3    | Enter the password                             | Demo@123                  | Password is entered                    |
+| 4    | Click the "Sign in" button                    |                           | Products page opens and shows "Welcome, Demo User" |
+| 5    | Type in the "Search products" box              | lamp                      | Only "Desk Lamp" is listed and "1 product found" is shown |
+
+Pass Criteria: The test passes if only "Desk Lamp" is listed and "1 product found" is shown.
+
+Test Status: Not Run.

@@ -1,0 +1,27 @@
+### Test Case: Verify sorting products by price
+
+Feature: (not given) Test Type: Positive Platform: Android App: com.demoshop.mobile
+
+| Field           | Details                                   |
+| --------------- | ----------------------------------------- |
+| Test Case ID    | DEMO-SHOP-TC006 |
+| Jira Reference  | DEMO-SHOP / TC006 |
+| Test Scenario   | Sort products by price |
+| Preconditions   | (not given) |
+| Email           | demo@shop.test |
+| Password        | Demo@123 |
+| Expected Result | "Leather Bookmark" is the first product and "Desk Lamp" is the last |
+
+### Test Steps
+
+| Step | Action | Test Data | Expected Result |
+| ---- | ------ | --------- | --------------- |
+| 1 | Launch the app | com.demoshop.mobile | Sign in screen is displayed with the heading "Sign in" |
+| 2 | Enter the email | demo@shop.test | Email is entered |
+| 3 | Enter the password | Demo@123 | Password is entered |
+| 4 | Tap the "Sign in" button |  | Products screen opens and shows "Welcome, Demo User" |
+| 5 | Select "Price: low to high" in "Sort by" | Price: low to high | "Leather Bookmark" is the first product and "Desk Lamp" is the last |
+
+Pass Criteria: The test passes if "Leather Bookmark" is the first product and "Desk Lamp" is the last.
+
+Test Status: Not Run.

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in | Demo Shop</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="login">
+  <main class="card">
+    <h1>Sign in</h1>
+    <p id="flash" class="success" role="status"></p>
+    <form id="login-form" novalidate>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="Enter your email" autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Enter your password" autocomplete="current-password">
+      </div>
+      <p id="error" class="error" role="alert"></p>
+      <button type="submit">Sign in</button>
+    </form>
+    <p><a href="signup.html">New user? Sign up</a></p>
+    <p class="hint">Demo account: demo@shop.test / Demo@123</p>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

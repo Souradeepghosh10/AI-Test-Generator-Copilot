@@ -1,0 +1,34 @@
+### Test Case: Verify checkout with an invalid PIN code
+
+Feature: (not given) Test Type: Negative Platform: Android App: com.demoshop.mobile
+
+| Field           | Details                                   |
+| --------------- | ----------------------------------------- |
+| Test Case ID    | DEMO-SHOP-TC010 |
+| Jira Reference  | DEMO-SHOP / TC010 |
+| Test Scenario   | Checkout with an invalid PIN code |
+| Preconditions   | (not given) |
+| Email           | demo@shop.test |
+| Password        | Demo@123 |
+| Expected Result | Error message "PIN code must be 6 digits" is shown and the screen stays on Checkout |
+
+### Test Steps
+
+| Step | Action | Test Data | Expected Result |
+| ---- | ------ | --------- | --------------- |
+| 1 | Launch the app | com.demoshop.mobile | Sign in screen is displayed with the heading "Sign in" |
+| 2 | Enter the email | demo@shop.test | Email is entered |
+| 3 | Enter the password | Demo@123 | Password is entered |
+| 4 | Tap the "Sign in" button |  | Products screen opens and shows "Welcome, Demo User" |
+| 5 | Tap "Add to cart" for "Wall Calendar" |  | The cart button shows "Cart (1)" |
+| 6 | Tap the "Cart (1)" button |  | Cart screen lists Wall Calendar |
+| 7 | Tap "Proceed to checkout" |  | Checkout screen opens with the heading "Checkout" |
+| 8 | Enter the full name | Demo User | Full name is entered |
+| 9 | Enter the address | 12 MG Road | Address is entered |
+| 10 | Enter the city | Bengaluru | City is entered |
+| 11 | Enter the PIN code | 5600 | PIN code is entered |
+| 12 | Tap the "Place order" button |  | Error message "PIN code must be 6 digits" is shown and the screen stays on Checkout |
+
+Pass Criteria: The test passes if error message "PIN code must be 6 digits" is shown and the screen stays on Checkout.
+
+Test Status: Not Run.

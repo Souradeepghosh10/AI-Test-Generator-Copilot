@@ -1,0 +1,27 @@
+### Test Case: Verify login with a wrong password
+
+Feature: (not given) Test Type: Negative Platform: Web URL: http://localhost:4173/login.html
+
+| Field           | Details                                   |
+| --------------- | ----------------------------------------- |
+| Test Case ID    | DEMO-SHOP-TC002                         |
+| Jira Reference  | DEMO-SHOP / TC002                         |
+| Test Scenario   | Login with a wrong password            |
+| Preconditions   | (not given)                              |
+| Email           | demo@shop.test                          |
+| Password        | Wrong@123                               |
+| Expected Result | Error message "Invalid email or password" is shown |
+
+### Test Steps
+
+| Step | Action                    | Test Data       | Expected Result                 |
+| ---- | ------------------------- | --------------- | ------------------------------- |
+| 1    | Navigate to the login page | http://localhost:4173/login.html | Login page is displayed with the heading "Sign in" |
+| 2    | Enter the email            | demo@shop.test  | Email is entered                |
+| 3    | Enter the password         | Wrong@123        | Password is entered             |
+| 4    | Click the "Sign in" button |                 | Error message "Invalid email or password" is shown |
+| 5    | Verify the URL             |                 | URL still contains login.html   |
+
+Pass Criteria: The test passes if Error message "Invalid email or password" is shown.
+
+Test Status: Not Run.

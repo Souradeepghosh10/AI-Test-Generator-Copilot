@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create account | Demo Shop</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="signup">
+  <main class="card">
+    <h1>Create account</h1>
+    <form id="signup-form" novalidate>
+      <div class="field">
+        <label for="name">Full name</label>
+        <input id="name" type="text" placeholder="Enter your name" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="Enter your email" autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="At least 6 characters" autocomplete="new-password">
+      </div>
+      <fieldset>
+        <legend>Interests</legend>
+        <label class="option"><input type="checkbox" name="interest" value="Playwright"> Playwright</label>
+        <label class="option"><input type="checkbox" name="interest" value="Selenium"> Selenium</label>
+        <label class="option"><input type="checkbox" name="interest" value="Cypress"> Cypress</label>
+      </fieldset>
+      <div class="field">
+        <label for="state">State</label>
+        <select id="state">
+          <option value="">Select a state</option>
+          <option>Karnataka</option>
+          <option>Maharashtra</option>
+          <option>Tamil Nadu</option>
+          <option>West Bengal</option>
+        </select>
+      </div>
+      <p id="error" class="error" role="alert"></p>
+      <button type="submit" id="create-account">Create account</button>
+      <p id="result" class="success" role="status"></p>
+    </form>
+    <p><a href="login.html">Already have an account? Sign in</a></p>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+### Test Case: Verify login with valid credentials
+
+Feature: (not given) Test Type: Positive Platform: Web URL: http://localhost:4173/login.html
+
+| Field           | Details                                   |
+| --------------- | ----------------------------------------- |
+| Test Case ID    | DEMO-SHOP-TC001                         |
+| Jira Reference  | DEMO-SHOP / TC001                         |
+| Test Scenario   | Login with valid credentials            |
+| Preconditions   | (not given)                              |
+| Email           | demo@shop.test                          |
+| Password        | Demo@123                                |
+| Expected Result | Products page opens and shows "Welcome, Demo User" |
+
+### Test Steps
+
+| Step | Action                    | Test Data       | Expected Result                 |
+| ---- | ------------------------- | --------------- | ------------------------------- |
+| 1    | Navigate to the login page | http://localhost:4173/login.html | Login page is displayed with the heading "Sign in" |
+| 2    | Enter the email            | demo@shop.test  | Email is entered                |
+| 3    | Enter the password         | Demo@123        | Password is entered             |
+| 4    | Click the "Sign in" button |                 | Products page opens and shows "Welcome, Demo User" |
+| 5    | Verify the URL             |                 | URL contains products.html      |
+
+Pass Criteria: The test passes if Products page opens and shows "Welcome, Demo User".
+
+Test Status: Not Run.

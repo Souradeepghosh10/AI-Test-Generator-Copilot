@@ -1,0 +1,29 @@
+### Test Case: Verify removing a product from the cart
+
+Feature: (not given) Test Type: Positive Platform: Android App: com.demoshop.mobile
+
+| Field           | Details                                   |
+| --------------- | ----------------------------------------- |
+| Test Case ID    | DEMO-SHOP-TC008 |
+| Jira Reference  | DEMO-SHOP / TC008 |
+| Test Scenario   | Remove a product from the cart |
+| Preconditions   | (not given) |
+| Email           | demo@shop.test |
+| Password        | Demo@123 |
+| Expected Result | Message "Your cart is empty." is shown and the cart button shows "Cart (0)" |
+
+### Test Steps
+
+| Step | Action | Test Data | Expected Result |
+| ---- | ------ | --------- | --------------- |
+| 1 | Launch the app | com.demoshop.mobile | Sign in screen is displayed with the heading "Sign in" |
+| 2 | Enter the email | demo@shop.test | Email is entered |
+| 3 | Enter the password | Demo@123 | Password is entered |
+| 4 | Tap the "Sign in" button |  | Products screen opens and shows "Welcome, Demo User" |
+| 5 | Tap "Add to cart" for "Pencil Set" |  | The cart button shows "Cart (1)" |
+| 6 | Tap the "Cart (1)" button |  | Cart screen lists Pencil Set |
+| 7 | Tap "Remove" for "Pencil Set" |  | Message "Your cart is empty." is shown and the cart button shows "Cart (0)" |
+
+Pass Criteria: The test passes if message "Your cart is empty." is shown and the cart button shows "Cart (0)".
+
+Test Status: Not Run.
