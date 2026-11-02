@@ -22,32 +22,37 @@ line range (the mobile rules are near the end, and a partial read misses them). 
 do the member's job yourself, following its `.agent.md` file whole.
 
 Mobile in short (the full rules are in `.github/platforms.md` sections 3-5; read them before any phone work):
-- Explore with `node mobile-tests/act.mjs` in the terminal: `launch`, then `screen` on every new screen, then
+- Explore with `node mobile-tests/act.mjs` in the terminal: `launch --app=<App>`, then `screen` on every new screen, then
   `tap "<element>"`, `fill "<field>" "<text>"`, `see "<text>"`, ... It acts on the phone and prints the exact
   Mobilewright line for each action: copy those lines, they are the explorer's report. Name elements exactly as
-  `screen` shows them (six buttons say "Add to cart"; each has a label like "Add Notebook A5 to cart").
+  `screen` shows them (several buttons can say "Delete"; each has a label like "Delete Invoice 42").
 - A mobile test is Mobilewright: `import { test, expect } from '@mobilewright/test';` and
   `async ({ screen }) => { ... }` with `screen.getBy...` locators. The MCP tool names are not an API: there is no
   `mobile`, `driver` or `device.findElement` object, no `launchApp`, `terminateApp`, `tap({...})` or `type(...)`.
 - Check before running: `cd mobile-tests && npm run typecheck`, then
   `cd mobile-tests && npx mobilewright test tests/<name>.spec.ts --reporter=list --retries=0`.
 
+Web in short (`.github/platforms.md` section 6): explore with `node web-tests/act.mjs` in the terminal: `open "<url>"`,
+then `screen` on every new page, then `click`, `fill`, `select`, `see`, `url`, ..., and `close` at the end. It prints
+the same Playwright lines as the MCP's `Ran Playwright code`, for far fewer tokens. The Playwright MCP tools are the
+fallback when it cannot run. On both platforms, join steps with `+` to do a whole page in one call.
+
 Real locators only: every locator and assertion in a test must be code taken from the real page or screen,
-copied exactly: on web what the Playwright MCP returned (`Ran Playwright code`, `browser_generate_locator`,
-`browser_verify_*`), on mobile what `node mobile-tests/act.mjs` printed. Never write a test without the explorer's
+copied exactly: on web what `node web-tests/act.mjs` printed (or the Playwright MCP returned: `Ran Playwright code`,
+`browser_generate_locator`, `browser_verify_*`), on mobile what `node mobile-tests/act.mjs` printed. Never write a test without the explorer's
 report of real code: when there is none, the explorer runs (the table in `.github/pipeline.md` makes sure of it).
 
 Start working at once. Do not inspect the project first: everything you need is in this file, the test case,
-and the `.agent.md` files. Never read `scripts/`, `node_modules/`, `.env`, `mobile-tests/*.mjs`, `mobile-tests/lib/`
-or other tests (running the commands named here is fine).
+and the `.agent.md` files. Never read `scripts/`, `node_modules/`, `.env`, `mobile-tests/*.mjs`, `mobile-tests/lib/`, `web-tests/*.mjs`,
+`web-tests/lib/` or other tests (running the commands named here is fine).
 
 ## Keep the user informed
 
 Report as you go, like a teammate posting short updates, and nothing more (no plans, no explanations):
 - When you start a test case: `▶ <test case file> (<platform>)`.
 - Before each agent: `Team (step N): <agent> - <the rule that matched>`.
-- After each agent, one line with its outcome (the user does not see a subagent's reply, only your line), e.g. `Explorer: 8/8 steps done`, `Generator: wrote mobile-tests/tests/demo-shop-tc007.spec.ts, typecheck OK`,
-  `Reviewer: APPROVED`, `Healer: run 1 failed at step 5 (no "Add to cart" for Notebook A5), fixing`, `Healer: PASSED`.
+- After each agent, one line with its outcome (the user does not see a subagent's reply, only your line), e.g. `Explorer: 8/8 steps done`, `Generator: wrote mobile-tests/tests/scrum-7-tc002.spec.ts, typecheck OK`,
+  `Reviewer: APPROVED`, `Healer: run 1 failed at step 5 (no "Delete" button for Invoice 42), fixing`, `Healer: PASSED`.
 - When you recover from a problem on your own, say what you did in one line (e.g. `Explorer stopped at step 3; exploring again from the start`).
 
 ## 1. Inputs -> manual test cases
@@ -68,8 +73,9 @@ Before the first test case of each platform, run once in the terminal:
 - web: `node scripts/preflight.mjs web <the test case's URL>`
 - mobile: `node scripts/preflight.mjs mobile` (add `--ios` for iOS)
 
-It installs what is missing and starts what is not running (the Demo Shop server, the Android emulator, the app
-build), then prints `READY:` lines. Report them in one line. If it prints `PROBLEM:` lines, that platform is
+It installs what is missing and starts what is not running (the web app if `qa.config.json` says how, the Android
+emulator, the app build), then prints `READY:` lines. The app under test comes from the test case (`URL:` / `App:`)
+or from `qa.config.json`. Report them in one line. If it prints `PROBLEM:` lines, that platform is
 blocked: tell the user exactly what each PROBLEM line says they must do, skip that platform's test cases (they are
 `BLOCKED` in the summary), and go on with the other platform.
 

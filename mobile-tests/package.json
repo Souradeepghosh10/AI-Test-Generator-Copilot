@@ -2,7 +2,7 @@
   "name": "mobile-tests",
   "version": "1.0.0",
   "private": true,
-  "description": "Mobilewright tests for the native Demo Shop Android app (../demo-mobile-app)",
+  "description": "Mobilewright tests for the Android / iOS app set in ../qa.config.json",
   "scripts": {
     "build-app": "../demo-mobile-app/build.sh",
     "test": "mobilewright test",

@@ -7,6 +7,45 @@ opening a **pull request**: a **Playwright** test for a web app, or a **Mobilewr
 The AI model is Copilot's: no OpenAI or other LLM API key. Jira is read through the Atlassian MCP server,
 which signs you in through the browser: no API token either.
 
+## Use it with your own app
+
+The agents work with any website and any Android / iOS app. The repo's Demo Shop (`demo-app/`,
+`demo-mobile-app/`) is only a sample to try it on. Point the team at your app in **`qa.config.json`**:
+
+```json
+{
+  "web": {
+    "url": "https://your-app.example.com/login",
+    "startCommand": "",
+    "testIdAttribute": "data-testid"
+  },
+  "mobile": {
+    "platform": "android",
+    "appId": "com.yourcompany.app",
+    "appFile": "apps/your-app.apk",
+    "buildCommand": ""
+  }
+}
+```
+
+| Setting | What it is |
+|---|---|
+| `web.url` | The page a test case starts on when it gives no URL of its own |
+| `web.startCommand` | Starts your app locally when `web.url` cannot be reached (e.g. `npm run dev --prefix ../my-app`); empty for an online app |
+| `web.testIdAttribute` | The attribute your app uses for test ids (`data-testid`, `data-test`, `data-qa`, ...) |
+| `mobile.platform` | `android` or `ios` |
+| `mobile.appId` | The Android package name or iOS bundle id, for test cases with no `App:` field |
+| `mobile.appFile` | The `.apk` / `.app` installed before the tests (path from the project root); empty if the app is already installed |
+| `mobile.buildCommand` | Builds `appFile` when it is missing; empty if you provide the file |
+
+A test case can also name its own app: a `URL:` field (web) or an `App:` field (mobile) wins over `qa.config.json`.
+Environment variables override the file, e.g. in CI: `QA_WEB_URL`, `QA_WEB_START`, `QA_PLATFORM`, `QA_APP_ID`,
+`QA_APP_FILE`, `QA_APP_BUILD`. Both `act.mjs` tools, `scripts/preflight.mjs`, `playwright.config.ts` and
+`mobilewright.config.ts` read it through `scripts/qa-config.cjs`.
+
+Then put your requirements in `requirements/web/` or `requirements/mobile/` (or use Jira keys) and run
+`/automate-tests`.
+
 ## The team
 
 ```
@@ -19,7 +58,7 @@ which signs you in through the browser: no API token either.
         ▼
  QA SUPERVISOR  picks the platform (web, Android, iOS), then the next agent from a fixed table,
         │       max 12 steps per test case
-        ├─► EXPLORER   does the steps in a real browser (Playwright MCP) or app (mobile MCP) and records the
+        ├─► EXPLORER   does the steps in a real browser (web-tests/act.mjs) or app (mobile-tests/act.mjs) and records the
         │              real code for each step (real locators + assertions); a failing step: 3 tries, then STOP
         ├─► GENERATOR  copies that code into the test, never writes a locator itself (max 2 rewrites)
         ├─► REVIEWER   8-point checklist (incl. "every locator is a real one"): APPROVED or CHANGES REQUESTED
@@ -32,14 +71,14 @@ which signs you in through the browser: no API token either.
 |---|---|---|
 | Requirements | `requirements/web/` | `requirements/mobile/` |
 | Test cases | `test_cases/web/` | `test_cases/mobile/` |
-| Drives the app with | Playwright MCP | `mobile-tests/act.mjs` (Mobilewright), plus the mobile MCP ([mobile-mcp](https://github.com/mobile-next/mobile-mcp)) to find devices and take screenshots |
-| Real locators from | the code the Playwright MCP runs (`browser_generate_locator`, `browser_verify_*`) | `mobile-tests/act.mjs`: it taps and types with Mobilewright and prints the exact line for each action |
+| Drives the app with | `web-tests/act.mjs` (Playwright), with the Playwright MCP as a fallback | `mobile-tests/act.mjs` (Mobilewright), plus the mobile MCP ([mobile-mcp](https://github.com/mobile-next/mobile-mcp)) to find devices and take screenshots |
+| Real locators from | `web-tests/act.mjs`: it clicks and types with Playwright and prints the exact line for each action (the same code the Playwright MCP would print) | `mobile-tests/act.mjs`: it taps and types with Mobilewright and prints the exact line for each action |
 | Test file | `web-tests/tests/<name>.spec.ts` | `mobile-tests/tests/<name>.spec.ts` |
 
 ## Project layout
 
 ```
-web-tests/          Playwright: package.json, playwright.config.ts, tests/, its own node_modules and reports
+web-tests/          Playwright: package.json, playwright.config.ts, tests/, act.mjs, its own node_modules and reports
 mobile-tests/       Mobilewright: package.json, mobilewright.config.ts, tests/, act.mjs + locator.mjs, its own node_modules and reports
 demo-app/           the web Demo Shop (served at http://localhost:4173)
 demo-mobile-app/    the native Android Demo Shop (build.sh -> build/demo-shop.apk)
@@ -92,26 +131,27 @@ Then open `.vscode/mcp.json` and click **Start** above `playwright`, `mobile` (o
 In Copilot Chat, ask once; the team does the rest on its own (start a new chat each time you change an agent file):
 
 ```
-/write-test-cases requirements/web/TC008.xlsx                  only the manual test cases (web)
-/write-test-cases requirements/mobile/demo_shop.xlsx           only the manual test cases (phone)
+/write-test-cases requirements/web/<file>.xlsx                only the manual test cases (web)
+/write-test-cases requirements/mobile/<file>.xlsx             only the manual test cases (phone)
 /write-test-cases SCRUM-7                                      from Jira (add "for android" for a phone app)
-/automate-tests test_cases/web/DEMO-SHOP-TC001.txt             explore, write, review and run the test
-/automate-tests test_cases/mobile/DEMO-SHOP-TC001.txt          the same on a phone
-/automate-tests "requirements/web/test_cases_test demo.csv"    everything in one go (quote paths with spaces)
+/automate-tests test_cases/web/SCRUM-7-TC001.txt               explore, write, review and run the test
+/automate-tests test_cases/mobile/SCRUM-7-TC001.txt            the same on a phone
+/automate-tests "requirements/web/my stories.csv"              everything in one go (quote paths with spaces)
 /automate-tests mobile                                         every test case in test_cases/mobile/
 /automate-tests mobile and open pull requests                  ... and no question at the end
 ```
 
 What the supervisor does by itself, like a QA engineer handed the task:
-- **Prepares the platform** with `node scripts/preflight.mjs web|mobile`: installs missing packages, starts the
-  Demo Shop server, starts the Android emulator, builds the Demo Shop app. Only what it cannot fix (no Android SDK,
+- **Prepares the platform** with `node scripts/preflight.mjs web|mobile`: installs missing packages, starts your
+  web app (if `web.startCommand` is set), starts the Android emulator, checks or builds the app file
+  (`qa.config.json`). Only what it cannot fix (no Android SDK,
   no emulator set up) is reported back to you, with what to do.
 - **Explores, writes, reviews, runs and heals** each test case in turn, posting one short line per step.
 - **Recovers on its own**: an exploration that gets stuck is redone once from the start; a test that still fails
   after 3 healing runs is explored and written again once.
 - **Asks one question at the end**: whether to open pull requests for the passing tests (none if you already said so).
 
-`.vscode/settings.json` lets the agents run the project's own commands (preflight, act.mjs, test runs, type checks)
+`.vscode/settings.json` lets the agents run the project's own commands (preflight, both act.mjs, test runs, type checks)
 without a confirmation each time. Pushing and pull requests still ask. The first time Copilot asks to use a
 `playwright` or `mobile` tool, choose **Always allow in this workspace**.
 
@@ -182,7 +222,28 @@ With the emulator running, the agents automate them on the app:
 /automate-tests test_cases/mobile/DEMO-SHOP-TC011.txt
 ```
 
-## Faster runs
+## Faster runs, fewer tokens
+
+Most of an agent's tokens go to page snapshots and to the number of tool calls (each call re-reads the chat so far).
+The two `act.mjs` tools cut both:
+
+- **A short element list instead of the page snapshot.** `node web-tests/act.mjs screen` prints one line per element
+  (`button "Add Notebook A5 to cart" text="Add to cart"`), with no layout boxes and no refs; `find "<part of a name>"`
+  prints only the matching elements. On the Demo Shop's products page that is about 40% of the size of the
+  Playwright MCP's page snapshot, and actions print only their code line, with no snapshot.
+- **Several steps in one call.** Join steps with `+`: a whole page in one call, e.g.
+  `node web-tests/act.mjs fill "Email" "user@example.com" + fill "Password" "Secret@123" + click "Log in" + see "Dashboard" + url`.
+  The same works for `mobile-tests/act.mjs` (one connection to the phone instead of one per step).
+- **The same code as before.** `web-tests/act.mjs` makes its locators with Playwright's own generator
+  (`locator.normalize()`, what `browser_generate_locator` calls), so reports, tests and reviews look the same.
+  The Playwright MCP stays configured as the fallback.
+
+```bash
+node web-tests/act.mjs open + screen                                       # fresh browser on web.url (or give a URL; --headed to watch)
+node web-tests/act.mjs click "Log in" + see "Dashboard"                    # prints the Playwright line of each step
+node web-tests/act.mjs find "cart"                                         # matching elements with their locators
+node web-tests/act.mjs close
+```
 
 - When Copilot asks to use a `playwright` or `mobile` tool, choose **Always allow in this workspace**.
 - Pick a fast model in the Copilot Chat model picker.

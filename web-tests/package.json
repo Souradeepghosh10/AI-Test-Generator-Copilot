@@ -2,7 +2,7 @@
   "name": "web-tests",
   "version": "1.0.0",
   "private": true,
-  "description": "Playwright tests for web apps (the local Demo Shop in ../demo-app by default)",
+  "description": "Playwright tests for the web app set in ../qa.config.json",
   "scripts": {
     "test": "playwright test",
     "test:headed": "playwright test --headed",

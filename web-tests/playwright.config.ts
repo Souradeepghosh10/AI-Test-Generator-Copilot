@@ -1,4 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
+// The app under test (URL, how to start it, test id attribute) comes from ../qa.config.json
+import qa from '../scripts/qa-config.cjs';
 
 export default defineConfig({
   testDir: './tests',
@@ -7,14 +9,16 @@ export default defineConfig({
   use: {
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
+    testIdAttribute: qa.web.testIdAttribute,
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
   ],
-  // Serves the local Demo Shop (../demo-app/) for tests that use http://localhost:4173
-  webServer: {
-    command: 'python3 -m http.server 4173 --directory ../demo-app',
-    url: 'http://localhost:4173/login.html',
+  // Starts the app first when qa.config.json says how (a local app); an online app needs nothing
+  webServer: qa.web.startCommand && qa.web.url ? {
+    command: qa.web.startCommand,
+    url: qa.web.url,
+    cwd: qa.root,
     reuseExistingServer: true,
-  },
+  } : undefined,
 });

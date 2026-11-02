@@ -1,11 +1,11 @@
 // Prints the real Mobilewright locator of elements on the device's current screen, without acting on them
 // (act.mjs does the same while it taps and types: prefer it when exploring). Every locator is also added to locators.log.
 //
-//   node mobile-tests/locator.mjs "Email" "Sign in" "Welcome, Demo User"     (add --ios for iOS, --device=<id> for a device)
+//   node mobile-tests/locator.mjs "Email" "Log in" "Welcome"     (--ios / --android to override qa.config.json, --device=<id>)
 //
 // Each argument is an element's text, label or resource id. Every element that matches is printed with its type:
-//   Sign in (TextView): screen.getByText('Sign in').first()
-//   Sign in (Button): screen.getByRole('button', { name: 'Sign in' })
+//   Log in (TextView): screen.getByText('Log in').first()
+//   Log in (Button): screen.getByRole('button', { name: 'Log in' })
 import { connect, findNodes, locatorFor, logLocators, snapshot, typeName } from './lib/screen-tools.mjs';
 
 const args = process.argv.slice(2);

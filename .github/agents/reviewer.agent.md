@@ -29,18 +29,20 @@ Checklist:
    optionally with .first() / .nth(i). The test uses the right framework for its folder
    (`@playwright/test` and `page` in `web-tests/tests/`, `@mobilewright/test` and `screen` in `mobile-tests/tests/`).
    A mobile test uses only the `screen` (or `device`) fixture and the calls in `.github/platforms.md` section 5:
-   reject `mobile`, `driver` or `page` fixtures, `launchApp` / `terminateApp`, `findElement`, `$()`, and elements
-   given as `{ id, text, type }` objects or `android.widget...` names.
+   `test.use({ bundleId: '<App>' })` is allowed when the test case's `App:` is another app. Reject `mobile`, `driver`
+   or `page` fixtures, `launchApp` / `terminateApp`, `findElement`, `$()`, and elements given as `{ id, text, type }`
+   objects or `android.widget...` names.
 4. No waitForTimeout() or fixed sleeps.
 5. The assertions really check the expected result (not something always true).
 6. The test name contains the test case ID.
 7. No if statements, try/catch or .catch() that make a step optional. Every step must always run.
 8. Every locator is a real one: it appears exactly (same method, name, options and .first() / .nth()) in the
-   explorer's report or in other tool output in this conversation (web: `Ran Playwright code`,
-   `browser_generate_locator`; mobile: lines printed by `node mobile-tests/act.mjs` or `locator.mjs`, all kept in
-   `mobile-tests/locators.log`: read that file for a mobile test).
+   explorer's report or in other tool output in this conversation (web: lines printed by `node web-tests/act.mjs`,
+   all kept in `web-tests/locators.log`, or the MCP's `Ran Playwright code` / `browser_generate_locator`; mobile:
+   lines printed by `node mobile-tests/act.mjs` or `locator.mjs`, all kept in `mobile-tests/locators.log`). Read the
+   platform's `locators.log` only if a locator is not in the report.
    A locator found nowhere in that output was guessed: request that it be taken from the report or the tools.
-   For a web test with no explorer's report in the conversation, skip this item.
+   For a web test with no explorer's report in the conversation and no `web-tests/locators.log`, skip this item.
 
 Approve if all checklist items pass. Do not reject for small style preferences.
 

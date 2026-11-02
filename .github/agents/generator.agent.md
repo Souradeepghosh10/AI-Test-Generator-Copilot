@@ -21,17 +21,19 @@ If the report lists a failed step under Problems, do not write a test: say which
 ## Real locators only
 
 The explorer's report holds, for each step, the code lines taken from the real page or screen
-(web: `page.` lines; mobile: `screen.` lines printed by `act.mjs`).
+(web: `page.` lines printed by `web-tests/act.mjs` or the Playwright MCP; mobile: `screen.` lines printed by `act.mjs`).
 - Copy those lines into the test exactly, in the same order. Do not change a locator, its options, the
   text, or the assertion: not to `getByPlaceholder`, `getByLabel`, `getByTestId`, CSS or anything "nicer".
 - You may store a copied locator in a `const` to reuse it, as long as the locator itself is unchanged.
 - Never write a locator yourself. If a step or expected result has no code line in the report, or the report gives
   something that is not such a code line (element ids, `android.widget...` types, `@e12` refs, coordinates, or prose),
   get it from the real page or screen and copy what the tool returns:
-  - web: `browser_navigate` to the test case URL, replay the earlier steps with the report's code, then use
-    `browser_generate_locator` or a `browser_verify_*` tool. Call browser_close when done.
-  - mobile: `node mobile-tests/act.mjs launch`, replay the earlier steps with `act.mjs`, then do the missing step
-    with `act.mjs` and copy what it prints (`.github/platforms.md` section 3).
+  - web: `node web-tests/act.mjs open "<test case URL>"`, replay the earlier steps with `act.mjs` in one call
+    (joined with `+`), then do the missing step or check with `act.mjs` and copy what it prints (`.github/platforms.md`
+    section 6). Close it with `node web-tests/act.mjs close`. If `act.mjs` cannot run: `browser_navigate`, replay the
+    earlier steps with the report's code, then `browser_generate_locator` or a `browser_verify_*` tool, and browser_close.
+  - mobile: `node mobile-tests/act.mjs launch --app=<App>`, replay the earlier steps with `act.mjs` in one call (joined with `+`),
+    then do the missing step with `act.mjs` and copy what it prints (`.github/platforms.md` section 3).
   If you still cannot get it, stop and say which step needs the explorer again.
 
 ## Rules
@@ -49,12 +51,12 @@ import { test, expect } from '@playwright/test';
 
 test('<TEST CASE ID> - <title>', async ({ page }) => {
   // Step 1: Navigate to the login page
-  await page.goto('http://localhost:4173/login.html');
-  await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible();
+  await page.goto('https://example.com/login');
+  await expect(page.getByRole('heading', { name: 'Log in' })).toBeVisible();
 
   // Step 2: Enter the email
-  await page.getByRole('textbox', { name: 'Email' }).fill('demo@shop.test');
-  await expect(page.getByRole('textbox', { name: 'Email' })).toHaveValue('demo@shop.test');
+  await page.getByRole('textbox', { name: 'Email' }).fill('user@example.com');
+  await expect(page.getByRole('textbox', { name: 'Email' })).toHaveValue('user@example.com');
 });
 ```
 
@@ -67,14 +69,17 @@ objects: elements are found only with the copied `screen.getBy...` locators.
 import { test, expect } from '@mobilewright/test';
 
 test('<TEST CASE ID> - <title>', async ({ screen }) => {
-  // Step 1: Open the app on the sign in screen
-  await expect(screen.getByText('Sign in').first()).toBeVisible();
+  // Step 1: Open the app on the log in screen
+  await expect(screen.getByText('Log in').first()).toBeVisible();
 
   // Step 2: Enter the email
-  await screen.getByLabel('Email').fill('demo@shop.test');
-  await expect(screen.getByLabel('Email')).toHaveValue('demo@shop.test');
+  await screen.getByLabel('Email').fill('user@example.com');
+  await expect(screen.getByLabel('Email')).toHaveValue('user@example.com');
 });
 ```
+
+If the test case's `App:` is not `mobile.appId` in `qa.config.json`, add `test.use({ bundleId: '<App>' });` right
+after the import line (`.github/platforms.md` section 5).
 
 Before saving, check your code against the reviewer's checklist (`.github/agents/reviewer.agent.md`, items 1-8)
 so it is approved the first time.

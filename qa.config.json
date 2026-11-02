@@ -1,0 +1,13 @@
+{
+  "web": {
+    "url": "http://localhost:4173/login.html",
+    "startCommand": "python3 -m http.server 4173 --directory demo-app",
+    "testIdAttribute": "data-testid"
+  },
+  "mobile": {
+    "platform": "android",
+    "appId": "com.demoshop.mobile",
+    "appFile": "builds/demo-shop.apk",
+    "buildCommand": ""
+  }
+}
