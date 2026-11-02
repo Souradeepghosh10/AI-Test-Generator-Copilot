@@ -2,30 +2,39 @@
 // twin of the Playwright MCP's "Ran Playwright code". The agents explore with it and copy the printed lines into tests,
 // so a mobile test never holds a guessed locator or an invented API. Run it from the project root:
 //
-//   node mobile-tests/act.mjs launch                     start the app fresh (bundleId from mobilewright.config.ts)
+//   node mobile-tests/act.mjs launch                     start the app fresh (mobile.appId in qa.config.json, or --app=<id>)
 //   node mobile-tests/act.mjs screen                     list the app's elements on screen, each with its real locator
-//   node mobile-tests/act.mjs tap "Sign in"              tap an element
+//   node mobile-tests/act.mjs tap "Log in"               tap an element
 //   node mobile-tests/act.mjs fill "Email" "a@b.c"       type into a field (and check its value)
-//   node mobile-tests/act.mjs see "Welcome, Demo User"   check that a text or element is visible
+//   node mobile-tests/act.mjs see "Welcome"              check that a text or element is visible
 //   node mobile-tests/act.mjs value "Email" "a@b.c"      check a field's value
-//   node mobile-tests/act.mjs checked "Playwright"       check that a checkbox / radio is checked
+//   node mobile-tests/act.mjs checked "Remember me"      check that a checkbox / radio is checked
 //   node mobile-tests/act.mjs back | scroll              press Back / scroll down
+//   node mobile-tests/act.mjs find "cart"                only the elements whose text, label or id contains "cart"
+//
+// Several steps in one call, separated by a standalone +, run in order on one connection and stop at the first error:
+//   node mobile-tests/act.mjs fill "Email" "a@b.c" + fill "Password" "x" + tap "Log in" + see "Welcome"
 //
 // An element is named by its text, label or resource id, as `screen` shows it. One that is not on the screen is
 // scrolled to; one in the lower half of the screen (where the on-screen keyboard can cover it) gets a
 // scrollIntoViewIfNeeded() line first, so the test works with and without the keyboard.
 // When several elements share it
-// (e.g. the heading "Sign in" and the button "Sign in"), tap/fill pick the tappable one and see/checked the first one;
-// add --type=Button (any type `screen` shows) to choose. Options: --device=<id>, --ios, --app=<bundle id>.
+// (e.g. the heading "Log in" and the button "Log in"), tap/fill pick the tappable one and see/checked the first one;
+// add --type=Button (any type `screen` shows) to choose.
+// Options: --device=<id>, --ios / --android (default: mobile.platform in qa.config.json), --app=<app id> (with launch).
 // Each command prints only code lines, ready to copy; on a problem it prints "ERROR: ..." and exits with 1.
-import { config, connect, findNodes, isInput, isTappable, locatorFor, logLocators, quote, snapshot, typeName } from './lib/screen-tools.mjs';
-import { fileURLToPath } from 'node:url';
-import { resolve } from 'node:path';
+import { config, connect, findNodes, isInput, isTappable, locatorFor, logLocators, quote, snapshot, splitSteps, typeName } from './lib/screen-tools.mjs';
 
 const args = process.argv.slice(2);
-const options = Object.fromEntries(args.filter((a) => a.startsWith('--')).map((a) => a.slice(2).split('=')));
-const [command, target, text] = args.filter((a) => !a.startsWith('--'));
 const WAIT_MS = 5000;
+
+/** One step: its command, element and text, and the options written in that step (e.g. --type=Button). */
+function parse(argv) {
+  const options = Object.fromEntries(argv.filter((a) => a.startsWith('--')).map((a) => a.slice(2).split('=')));
+  const words = argv.filter((a) => !a.startsWith('--'));
+  const [command, target, text] = words;
+  return { command, target, text, options, rest: words.slice(1) };
+}
 
 const fail = (message) => {
   console.log(`ERROR: ${message}`);
@@ -40,8 +49,8 @@ const MAX_SWIPES = 4;
  * `scroll` is true when the test should bring it into view first: it was found by scrolling, or it sits in the
  * lower half of the screen, where the on-screen keyboard covers it on some runs and not on others.
  */
-async function resolveTarget(screen, prefer, needsPreferred = true) {
-  const found = await findTarget(screen, prefer, needsPreferred);
+async function resolveTarget(screen, step, prefer, needsPreferred = true) {
+  const found = await findTarget(screen, step, prefer, needsPreferred);
   const { tree, node } = found;
   const bottom = Math.max(...flattenBounds(tree));
   const middle = node.bounds.y + node.bounds.height / 2;
@@ -52,7 +61,7 @@ function flattenBounds(nodes) {
   return nodes.flatMap((n) => [n.bounds ? n.bounds.y + n.bounds.height : 0, ...flattenBounds(n.children || [])]);
 }
 
-async function findTarget(screen, prefer, needsPreferred) {
+async function findTarget(screen, { target, options }, prefer, needsPreferred) {
   const start = Date.now();
   let swipes = 0;
   for (;;) {
@@ -103,16 +112,26 @@ async function waitFor(check) {
   return true;
 }
 
+/** Prints one screen line: the element's type, text, label and real locator. */
+function printNode(screen, tree, node) {
+  const found = locatorFor(screen, tree, node);
+  const name = [node.text && `text="${node.text}"`, node.label && node.label !== node.text && `label="${node.label}"`,
+    node.isChecked && 'checked'].filter(Boolean).join(' ');
+  console.log(`${typeName(node)} ${name}`.trim() + ` -> ${found ? found.code : 'no locator'}`);
+  return found;
+}
+
 const commands = {
-  async launch(device) {
+  async launch(device, { options }) {
     const app = options.app || config.bundleId;
+    if (!app) throw new Error('no app to launch: add --app=<app id> (the test case\'s App:) or set mobile.appId in qa.config.json');
     await device.terminateApp(app).catch(() => {});
     try {
       await device.launchApp(app);
-    } catch {
-      // Not installed yet: install the build named in mobilewright.config.ts, then launch
-      const apk = resolve(fileURLToPath(new URL('.', import.meta.url)), config.installApps);
-      await device.installApp(apk);
+    } catch (error) {
+      // Not installed yet: install the app file named in qa.config.json, then launch
+      if (!config.installApps) throw new Error(`${app} could not be started and no app file is set (mobile.appFile in qa.config.json): ${error.message}`);
+      await device.installApp(config.installApps);
       await device.launchApp(app);
     }
     console.log(`// ${app} started fresh (a test needs no line for this: the config starts the app)`);
@@ -120,17 +139,24 @@ const commands = {
 
   async screen(device) {
     const { tree, nodes } = await snapshot(device.screen);
-    for (const node of nodes) {
-      const found = locatorFor(device.screen, tree, node);
-      const name = [node.text && `text="${node.text}"`, node.label && node.label !== node.text && `label="${node.label}"`,
-        node.isChecked && 'checked'].filter(Boolean).join(' ');
-      console.log(`${typeName(node)} ${name}`.trim() + ` -> ${found ? found.code : 'no locator'}`);
+    for (const node of nodes) printNode(device.screen, tree, node);
+  },
+
+  /** Like screen, but only the elements whose text, label or id contains the text (any case): a smaller answer. */
+  async find(device, { target }) {
+    const { tree, nodes } = await snapshot(device.screen);
+    const part = target.toLowerCase();
+    const hits = nodes.filter((n) => [n.text, n.label, n.resourceId, n.identifier].some((s) => s?.toLowerCase().includes(part)));
+    if (!hits.length) throw new Error(`nothing on the screen contains "${target}"`);
+    for (const node of hits) {
+      const found = printNode(device.screen, tree, node);
+      if (found) logLocators([found.code]);
     }
   },
 
-  async locate(device) {
+  async locate(device, { rest }) {
     const { tree, nodes } = await snapshot(device.screen);
-    for (const query of args.filter((a) => !a.startsWith('--')).slice(1)) {
+    for (const query of rest) {
       const matches = findNodes(nodes, query);
       if (!matches.length) fail(`"${query}" is not on the screen`);
       for (const node of matches) {
@@ -141,8 +167,8 @@ const commands = {
     }
   },
 
-  async tap(device) {
-    const target_ = await resolveTarget(device.screen, isTappable);
+  async tap(device, step) {
+    const target_ = await resolveTarget(device.screen, step, isTappable);
     const { code, locator } = target_;
     await scrollLine(target_);
     await locator.tap();
@@ -150,9 +176,10 @@ const commands = {
     console.log(`await ${code}.tap();`);
   },
 
-  async fill(device) {
+  async fill(device, step) {
+    const { text } = step;
     if (text === undefined) throw new Error('fill needs a text: fill "<field>" "<text>"');
-    const target_ = await resolveTarget(device.screen, isInput);
+    const target_ = await resolveTarget(device.screen, step, isInput);
     const { code, locator } = target_;
     await scrollLine(target_);
     await locator.fill(text);
@@ -163,8 +190,9 @@ const commands = {
     else fail(`the field does not show "${text}" after typing`);
   },
 
-  async see(device) {
-    const target_ = await resolveTarget(device.screen, () => false, false);
+  async see(device, step) {
+    const { target } = step;
+    const target_ = await resolveTarget(device.screen, step, () => false, false);
     const { code, locator } = target_;
     await scrollLine(target_);
     if (!(await waitFor(() => locator.isVisible().catch(() => false)))) throw new Error(`"${target}" is not visible`);
@@ -172,8 +200,9 @@ const commands = {
     console.log(`await expect(${code}).toBeVisible();`);
   },
 
-  async value(device) {
-    const target_ = await resolveTarget(device.screen, isInput);
+  async value(device, step) {
+    const { text } = step;
+    const target_ = await resolveTarget(device.screen, step, isInput);
     const { code, locator } = target_;
     await scrollLine(target_);
     const actual = await locator.getValue().catch(() => null);
@@ -182,8 +211,9 @@ const commands = {
     console.log(`await expect(${code}).toHaveValue(${quote(text)});`);
   },
 
-  async checked(device) {
-    const target_ = await resolveTarget(device.screen, isTappable);
+  async checked(device, step) {
+    const { target } = step;
+    const target_ = await resolveTarget(device.screen, step, isTappable);
     const { code, locator } = target_;
     await scrollLine(target_);
     if (!(await waitFor(() => locator.isChecked().catch(() => false)))) throw new Error(`"${target}" is not checked`);
@@ -202,20 +232,37 @@ const commands = {
   },
 };
 
-if (!commands[command]) {
-  console.log(`Usage: node mobile-tests/act.mjs <${Object.keys(commands).join(' | ')}> ["<text, label or id>"] ["<text>"]`);
-  process.exit(2);
-}
-if (!['launch', 'screen', 'back', 'scroll'].includes(command) && !target) {
-  console.log(`Usage: node mobile-tests/act.mjs ${command} "<text, label or id>"${command === 'fill' || command === 'value' ? ' "<text>"' : ''}`);
+// --device and --ios apply to the whole call (connect reads them from all the arguments)
+const steps = splitSteps(args).map(parse);
+
+const usage = ({ command, target }) => {
+  if (!commands[command]) return `Usage: node mobile-tests/act.mjs <${Object.keys(commands).join(' | ')}> ["<text, label or id>"] ["<text>"] [+ <command> ...]`;
+  if (!['launch', 'screen', 'back', 'scroll'].includes(command) && !target) {
+    return `Usage: node mobile-tests/act.mjs ${command} "<text, label or id>"${command === 'fill' || command === 'value' ? ' "<text>"' : ''}`;
+  }
+  return null;
+};
+const problem = steps.length ? steps.map(usage).find(Boolean) : usage({});
+if (problem) {
+  console.log(problem);
   process.exit(2);
 }
 
 const device = await connect(args);
 try {
-  await commands[command](device);
-} catch (error) {
-  fail(error.message.split('\n')[0]);
+  for (const [i, step] of steps.entries()) {
+    try {
+      await commands[step.command](device, step);
+    } catch (error) {
+      const where = steps.length > 1 ? `step ${i + 1} (${[step.command, ...step.rest].join(' ')}): ` : '';
+      fail(`${where}${error.message.split('\n')[0]}`);
+    }
+    if (process.exitCode) {
+      const left = steps.slice(i + 1).map((s) => [s.command, ...s.rest].join(' '));
+      if (left.length) console.log(`// not run: ${left.join(' + ')}`);
+      break;
+    }
+  }
 } finally {
   await device.close();
 }

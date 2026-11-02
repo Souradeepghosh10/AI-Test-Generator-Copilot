@@ -2,7 +2,7 @@
   // Lets the Copilot agents run this project's own local commands without asking each time, so a run of
   // /automate-tests goes from start to finish on its own. Pushing and pull requests (git push, gh pr) still ask.
   "chat.tools.terminal.autoApprove": {
-    "/^node (scripts\\/preflight|mobile-tests\\/act|mobile-tests\\/locator)\\.mjs\\b/": true,
+    "/^node (scripts\\/preflight|mobile-tests\\/act|mobile-tests\\/locator|web-tests\\/act)\\.mjs\\b/": true,
     "/^python3 scripts\\/read_requirements\\.py\\b/": true,
     "/^\\.venv\\/bin\\/python scripts\\/read_requirements\\.py\\b/": true,
     "/^npx (playwright|mobilewright) test\\b/": true,

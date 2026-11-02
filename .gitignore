@@ -6,6 +6,9 @@ test-results/
 playwright-report/
 mobilewright-report/
 mobile-tests/locators.log
+web-tests/locators.log
+web-tests/.browser.json
 .playwright-mcp/
 demo-mobile-app/build/
+builds/*.apk
 .DS_Store

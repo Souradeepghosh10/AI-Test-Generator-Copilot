@@ -13,7 +13,7 @@ other agent as a subagent with the `runSubagent` tool: `agentName` = `explorer`,
 
 - A subagent starts with an empty memory: its prompt must hold everything it needs (below).
 - Its reply is not shown to the user. After each one, post its outcome in one line, e.g.
-  `Explorer: 8/8 steps done`, `Generator: wrote mobile-tests/tests/demo-shop-tc007.spec.ts, typecheck OK`,
+  `Explorer: 8/8 steps done`, `Generator: wrote mobile-tests/tests/scrum-7-tc002.spec.ts, typecheck OK`,
   `Reviewer: APPROVED`, `Healer: PASSED after 1 fix (wrong button name in step 5)`.
 - If `runSubagent` is not available or fails, do that agent's job yourself, following its `.agent.md` file whole.
 - An agent whose prompt starts with `[team run]` is a subagent: it does only its own job, replies with its result in

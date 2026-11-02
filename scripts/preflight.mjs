@@ -1,20 +1,22 @@
 // Gets everything ready before the agents explore and run tests, the way a QA engineer would before starting:
 //
-//   node scripts/preflight.mjs web [<app url>]    web-tests installed (with Chromium), and the app reachable
-//                                                 (the local Demo Shop is started if it is the app and not running)
-//   node scripts/preflight.mjs mobile [--ios]     mobile-tests installed, a phone running (the first Android
-//                                                 emulator is started if none is), and the app built if it is the
-//                                                 Demo Shop and its build is missing
+//   node scripts/preflight.mjs web [<app url>]    web-tests installed (with Chromium), and the app reachable (no URL:
+//                                                 web.url in qa.config.json; started with web.startCommand if it is
+//                                                 that app and not running)
+//   node scripts/preflight.mjs mobile [--ios|--android]  mobile-tests installed, a phone running (the first Android
+//                                                 emulator is started if none is), and the app file present (built
+//                                                 with mobile.buildCommand if it is missing)
 //
+// The app under test is set in qa.config.json (see scripts/qa-config.cjs).
 // Prints one "READY:" line per thing that is ready, and "PROBLEM:" lines (exit code 1) for what a person must fix.
 import { execFileSync, spawn } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import qa from './qa-config.cjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const DEMO_URL = 'http://localhost:4173/login.html';
 const [platform, ...rest] = process.argv.slice(2);
 const problems = [];
 
@@ -52,22 +54,30 @@ async function reachable(url) {
 }
 
 async function web() {
-  const url = rest.find((a) => !a.startsWith('--')) || DEMO_URL;
+  const url = rest.find((a) => !a.startsWith('--')) || qa.web.url;
   installPackages('web-tests', () => run('npx', ['playwright', 'install', 'chromium'], { cwd: join(ROOT, 'web-tests') }));
+  if (!url) return problem('no app URL: give it (node scripts/preflight.mjs web <url>) or set web.url in qa.config.json');
 
   if (await reachable(url)) return ready(`${url} is reachable`);
-  if (!url.startsWith('http://localhost:4173')) {
-    return problem(`${url} cannot be reached: start the app or check the URL in the test case`);
+  // Only the configured app can be started here, and only if qa.config.json says how
+  const sameApp = qa.web.url && new URL(url).origin === new URL(qa.web.url).origin;
+  if (!sameApp || !qa.web.startCommand) {
+    return problem(`${url} cannot be reached: start the app, check the URL in the test case, or set web.startCommand ` +
+      'in qa.config.json');
   }
-  startInBackground('python3', ['-m', 'http.server', '4173', '--directory', 'demo-app']);
-  for (let i = 0; i < 20 && !(await reachable(url)); i++) await sleep(500);
-  if (await reachable(url)) ready(`the Demo Shop is running at ${url} (just started)`);
-  else problem(`could not start the Demo Shop (python3 -m http.server 4173 --directory demo-app)`);
+  spawn(qa.web.startCommand, { cwd: ROOT, detached: true, stdio: 'ignore', shell: true }).unref();
+  for (let i = 0; i < 120 && !(await reachable(url)); i++) await sleep(500);
+  if (await reachable(url)) ready(`the app is running at ${url} (just started: ${qa.web.startCommand})`);
+  else problem(`the app did not start within a minute (${qa.web.startCommand})`);
 }
 
 async function mobile() {
   installPackages('mobile-tests');
-  if (rest.includes('--ios')) return iosSimulator();
+  const ios = rest.includes('--ios') || (!rest.includes('--android') && qa.mobile.platform === 'ios');
+  if (ios) {
+    iosSimulator();
+    return appBuild();
+  }
 
   const sdk = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || join(homedir(), 'Library/Android/sdk');
   const adb = join(sdk, 'platform-tools/adb');
@@ -112,26 +122,26 @@ function iosSimulator() {
   }
 }
 
-/** The app file the config installs: built here if it is the Demo Shop, else it must exist. */
+/** The app file the config installs (mobile.appFile): built with mobile.buildCommand if it is missing. */
 function appBuild() {
-  const config = readFileSync(join(ROOT, 'mobile-tests/mobilewright.config.ts'), 'utf8');
-  const relative = config.match(/installApps:\s*['"]([^'"]+)['"]/)?.[1];
-  if (!relative) return ready('no app file to install (installApps is not set)');
-  const apk = resolve(ROOT, 'mobile-tests', relative);
-  if (existsSync(apk)) return ready(`app file present: ${relative}`);
-  if (!apk.startsWith(join(ROOT, 'demo-mobile-app'))) return problem(`the app file ${apk} is missing: build or download it`);
+  if (!qa.mobile.appId) problem('no app id: set mobile.appId in qa.config.json (or give each test case an App: field)');
+  const file = qa.mobile.appFile;
+  if (!file) return ready('no app file to install (mobile.appFile is empty): the app must already be on the device');
+  if (existsSync(file)) return ready(`app file present: ${file}`);
+  if (!qa.mobile.buildCommand) return problem(`the app file ${file} is missing: build or download it, or set mobile.buildCommand in qa.config.json`);
   try {
-    run(join(ROOT, 'demo-mobile-app/build.sh'), []);
-    ready('the Demo Shop app was built (just now)');
+    run(qa.mobile.buildCommand, [], { shell: true });
+    if (!existsSync(file)) return problem(`${qa.mobile.buildCommand} ran but ${file} is still missing`);
+    ready(`the app was built (just now): ${file}`);
   } catch (error) {
-    problem(`could not build the Demo Shop app: ${String(error.stderr || error.message).split('\n').filter(Boolean).pop()}`);
+    problem(`could not build the app (${qa.mobile.buildCommand}): ${String(error.stderr || error.message).split('\n').filter(Boolean).pop()}`);
   }
 }
 
 if (platform === 'web') await web();
 else if (platform === 'mobile') await mobile();
 else {
-  console.log('Usage: node scripts/preflight.mjs web [<app url>] | mobile [--ios]');
+  console.log('Usage: node scripts/preflight.mjs web [<app url>] | mobile [--ios | --android]');
   process.exit(2);
 }
 process.exit(problems.length ? 1 : 0);

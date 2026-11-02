@@ -39,17 +39,19 @@ A run that fails because the app or phone was not available does not count as on
      rewrite must come from the real page or screen (next point), never from the old code or the test case wording.
    - **A locator or assertion does not match the page or screen**: a new one must come from the real page or
      screen, never from you:
-     - web: `browser_navigate` to the test case URL, replay the steps before the failing one with the test's own
-       code, `browser_snapshot` to get the refs, then `browser_generate_locator` (or a `browser_verify_*` tool for an
-       assertion) and copy the code it returns exactly. Call browser_close when done.
-     - mobile: `node mobile-tests/act.mjs launch`, replay the test's steps with `act.mjs` (`.github/platforms.md`
-       section 3), run `act.mjs screen` where it fails, and redo that step with `act.mjs`: copy the lines it prints.
+     - web: `node web-tests/act.mjs open "<test case URL>"`, replay the steps before the failing one with `act.mjs`
+       in one call (joined with `+`), run `act.mjs screen` (or `find "<part of a name>"`) where it fails, and redo
+       that step or check with `act.mjs`: copy the lines it prints (`.github/platforms.md` section 6). Close it with
+       `node web-tests/act.mjs close`. If `act.mjs` cannot run: `browser_navigate`, replay with the test's own code,
+       `browser_snapshot`, then `browser_generate_locator` (or a `browser_verify_*` tool), and browser_close.
+     - mobile: `node mobile-tests/act.mjs launch --app=<App>` (the test case's `App:`, if any), replay the test's steps with `act.mjs` in one call (joined with
+       `+`, `.github/platforms.md` section 3), run `act.mjs screen` where it fails, and redo that step with `act.mjs`: copy the lines it prints.
        For a rewrite, redo every step with `act.mjs`, in order, and use only the lines it prints.
    - Errors that are not about the API or a locator (timing, wrong URL, test data) may be fixed without the browser or phone.
 4. Check the code again (step 1) until the typecheck prints no errors, then run the test again with the same command.
 5. If it still fails, try again. You can run a fixed version at most 3 times.
 6. After the 3rd failed run, STOP at once: no 4th run, no other ideas. If you opened the browser or the app,
-   close it (browser_close). Then give your reply below with `Test: FAILED`.
+   close it (`node web-tests/act.mjs close`, or browser_close). Then give your reply below with `Test: FAILED`.
 
 Keep the test checking the same expected results.
 Never delete an assertion just to make it pass.

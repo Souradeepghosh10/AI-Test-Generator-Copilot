@@ -55,10 +55,10 @@ The platform, first match wins (see `.github/platforms.md`):
 3. The source says so (e.g. a Platform column), else Web. A Jira story is Web unless the user or the story says otherwise.
 
 Web test cases are saved in `test_cases/web/`, Android and iOS test cases in `test_cases/mobile/`.
-- Web: the app URL is `https://freelance-learn-automation.vercel.app/login`,
-  unless the user or the source (for example a URL column in the file) gives a different one.
-- Android / iOS: the app id (e.g. `com.demoshop.mobile`) is the one the user or the source gives,
-  else `bundleId` in `mobile-tests/mobilewright.config.ts`.
+- Web: the app URL is the one the user or the source gives (for example a URL column in the file),
+  else `web.url` in `qa.config.json`. If there is none, ask the user for the URL: never invent one.
+- Android / iOS: the app id (e.g. `com.example.app`) is the one the user or the source gives,
+  else `mobile.appId` in `qa.config.json`. If there is none, ask the user for it.
   Write the steps in the app's words (tap a button, the screen shows ...), as the source does.
 
 Rules:
@@ -91,7 +91,7 @@ No guessing. Everything in a test case comes from the source (the story or the f
   and write (empty) when a field is deliberately left empty.
 
 Format (replace `<PLATFORM>`, `<APP_URL>` and `<STORY_KEY>`; for Android / iOS write `App: <APP_ID>` instead of
-`URL: <APP_URL>`, e.g. `Platform: Android App: com.demoshop.mobile`):
+`URL: <APP_URL>`, e.g. `Platform: Android App: com.example.app`):
 
 ```
 ### Test Case: <title starting with "Verify">

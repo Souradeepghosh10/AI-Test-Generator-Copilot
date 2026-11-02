@@ -1,9 +1,10 @@
 // Shared helpers for act.mjs and locator.mjs: connect to the device, read the screen once, and find the real
 // Mobilewright locator of an element with Mobilewright's own matching engine (queryAll), so a locator printed here
 // matches exactly the same elements in a test.
-import { appendFileSync, readFileSync } from 'node:fs';
+import { appendFileSync } from 'node:fs';
 import { android, ios } from 'mobilewright';
 import { queryAll } from '@mobilewright/core';
+import qa from '../../scripts/qa-config.cjs';
 
 const ROLES = {
   button: ['button', 'imagebutton', 'materialbutton', 'appcompatbutton', 'floatingactionbutton'],
@@ -14,10 +15,11 @@ const ROLES = {
 const INPUT_TYPES = ['edittext', 'appcompatedittext', 'textinputedittext', 'textfield', 'securetextfield', 'searchfield'];
 const TAPPABLE_TYPES = [...Object.values(ROLES).flat(), 'spinner', 'appcompatspinner', 'checkedtextview', ...INPUT_TYPES];
 
-const configText = readFileSync(new URL('../mobilewright.config.ts', import.meta.url), 'utf8');
+// The app under test, from qa.config.json (the same values mobilewright.config.ts uses)
 export const config = {
-  bundleId: configText.match(/bundleId:\s*['"]([^'"]+)['"]/)?.[1],
-  installApps: configText.match(/installApps:\s*['"]([^'"]+)['"]/)?.[1],
+  platform: qa.mobile.platform,
+  bundleId: qa.mobile.appId,
+  installApps: qa.mobile.appFile,
 };
 
 export const quote = (s) => `'${s.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
@@ -31,10 +33,14 @@ export const isTappable = (node) => TAPPABLE_TYPES.includes(typeOf(node));
 const isSystem = (node) => /^android:id\//.test(node.resourceId || node.identifier || '') &&
   !node.text && !node.label;
 
-/** Connects to the device (the first running one, or --device=<id>; --ios for iOS). The app is not restarted. */
+/**
+ * Connects to the device (the first running one, or --device=<id>) of the configured platform (--ios / --android to
+ * choose another). The app is not restarted.
+ */
 export async function connect(args) {
   const deviceId = args.find((a) => a.startsWith('--device='))?.slice('--device='.length);
-  const platform = args.includes('--ios') ? ios : android;
+  const name = args.includes('--ios') ? 'ios' : args.includes('--android') ? 'android' : config.platform;
+  const platform = name === 'ios' ? ios : android;
   return platform.launch({ autoAppLaunch: false, ...(deviceId && { deviceId }) });
 }
 
@@ -87,4 +93,11 @@ export function locatorFor(screen, tree, node) {
 /** Keeps every real locator in locators.log, which the reviewer checks tests against. */
 export function logLocators(codes) {
   if (codes.length) appendFileSync(new URL('../locators.log', import.meta.url), codes.join('\n') + '\n');
+}
+
+/** Splits `a "b" + c "d"` style argument lists into steps at each standalone `+`. */
+export function splitSteps(args) {
+  const steps = [[]];
+  for (const a of args) a === '+' ? steps.push([]) : steps.at(-1).push(a);
+  return steps.filter((s) => s.length);
 }
